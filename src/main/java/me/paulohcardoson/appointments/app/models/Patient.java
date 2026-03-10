@@ -1,5 +1,6 @@
 package me.paulohcardoson.appointments.app.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,7 @@ public class Patient {
 	public String cpf;
 
 	@OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
 	public List<Appointment> appointments;
 
 }

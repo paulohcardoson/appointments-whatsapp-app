@@ -4,6 +4,8 @@ import me.paulohcardoson.appointments.app.dto.requests.CreatePatientRequestBody;
 import me.paulohcardoson.appointments.app.exceptions.AppError;
 import me.paulohcardoson.appointments.app.models.Patient;
 import me.paulohcardoson.appointments.app.repositories.PatientRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -30,5 +32,9 @@ public class PatientService {
 			.build();
 
 		return patientRepository.save(patient);
+	}
+
+	public Page<Patient> listAll(Pageable pageable) {
+		return patientRepository.findAll(pageable);
 	}
 }

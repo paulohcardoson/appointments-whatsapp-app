@@ -1,0 +1,38 @@
+package me.paulohcardoson.appointments.app.controllers;
+
+import jakarta.validation.Valid;
+import me.paulohcardoson.appointments.app.dto.requests.CreateAppointmentRequestBody;
+import me.paulohcardoson.appointments.app.models.Appointment;
+import me.paulohcardoson.appointments.app.services.AppointmentService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/appointments")
+public class AppointmentController {
+
+	private final AppointmentService appointmentService;
+
+	public AppointmentController(AppointmentService appointmentService) {
+		this.appointmentService = appointmentService;
+	}
+
+	@PostMapping("/create")
+	public ResponseEntity<Appointment> create(
+		@Valid @RequestBody CreateAppointmentRequestBody body
+	) {
+		Appointment appointment = appointmentService.create(body);
+		return ResponseEntity.status(HttpStatus.CREATED).body(appointment);
+	}
+
+	@GetMapping
+	public ResponseEntity<Page<Appointment>> listAll(
+		@PageableDefault(size = 10, sort = "startTime") Pageable pageable
+	) {
+		return ResponseEntity.ok(appointmentService.listAll(pageable));
+	}
+}
