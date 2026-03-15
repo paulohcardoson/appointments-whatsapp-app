@@ -3,7 +3,7 @@ package me.paulohcardoson.appointments.app.dto.requests;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @Data
 public class CreateAppointmentRequestBody {
@@ -12,8 +12,8 @@ public class CreateAppointmentRequestBody {
 	public Long patientId;
 
 	@NotNull(message = "Start time is required")
-	public Timestamp startTime;
+	public Instant startTime;
 
 	@NotNull(message = "End time is required")
-	public Timestamp endTime;
+	public Instant endTime;
 }

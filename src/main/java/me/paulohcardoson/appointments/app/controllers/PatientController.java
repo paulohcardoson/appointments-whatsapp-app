@@ -2,7 +2,7 @@ package me.paulohcardoson.appointments.app.controllers;
 
 import jakarta.validation.Valid;
 import me.paulohcardoson.appointments.app.dto.requests.CreatePatientRequestBody;
-import me.paulohcardoson.appointments.app.models.Patient;
+import me.paulohcardoson.appointments.app.dto.responses.PatientResponse;
 import me.paulohcardoson.appointments.app.services.PatientService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,13 +22,14 @@ public class PatientController {
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<Patient> create(@Valid @RequestBody CreatePatientRequestBody body) {
-		Patient patient = patientService.create(body);
+	public ResponseEntity<PatientResponse> create(@Valid @RequestBody CreatePatientRequestBody body) {
+		var patient = PatientResponse.of(patientService.create(body));
+
 		return ResponseEntity.status(HttpStatus.CREATED).body(patient);
 	}
 
 	@GetMapping
-	public ResponseEntity<Page<Patient>> listAll(@PageableDefault(size = 10, sort = "fullName") Pageable pageable) {
-		return ResponseEntity.ok(patientService.listAll(pageable));
+	public ResponseEntity<Page<PatientResponse>> listAll(@PageableDefault(size = 10, sort = "fullName") Pageable pageable) {
+		return ResponseEntity.ok(patientService.listAll(pageable).map(PatientResponse::of));
 	}
 }

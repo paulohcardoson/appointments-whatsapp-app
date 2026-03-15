@@ -22,10 +22,14 @@ public class AppointmentService {
 	}
 
 	public Appointment create(CreateAppointmentRequestBody data) {
+		if (data.startTime.isAfter(data.endTime)) {
+			throw new AppError(HttpStatus.BAD_REQUEST, "End time must be after start time.");
+		}
+
 		var patient = patientRepository.findById(data.patientId)
 			.orElseThrow(() -> new AppError(HttpStatus.NOT_FOUND, "Patient with id " + data.patientId + " not found."));
 
-		Appointment appointment = Appointment.builder()
+		var appointment = Appointment.builder()
 			.startTime(data.startTime)
 			.endTime(data.endTime)
 			.patient(patient)

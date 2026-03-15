@@ -2,7 +2,7 @@ package me.paulohcardoson.appointments.app.controllers;
 
 import jakarta.validation.Valid;
 import me.paulohcardoson.appointments.app.dto.requests.CreateAppointmentRequestBody;
-import me.paulohcardoson.appointments.app.models.Appointment;
+import me.paulohcardoson.appointments.app.dto.responses.AppointmentResponse;
 import me.paulohcardoson.appointments.app.services.AppointmentService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,17 +22,19 @@ public class AppointmentController {
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<Appointment> create(
+	public ResponseEntity<AppointmentResponse> create(
 		@Valid @RequestBody CreateAppointmentRequestBody body
 	) {
-		Appointment appointment = appointmentService.create(body);
+		AppointmentResponse appointment = AppointmentResponse.of(appointmentService.create(body));
 		return ResponseEntity.status(HttpStatus.CREATED).body(appointment);
 	}
 
 	@GetMapping
-	public ResponseEntity<Page<Appointment>> listAll(
+	public ResponseEntity<Page<AppointmentResponse>> listAll(
 		@PageableDefault(size = 10, sort = "startTime") Pageable pageable
 	) {
-		return ResponseEntity.ok(appointmentService.listAll(pageable));
+		return ResponseEntity.ok(appointmentService.listAll(pageable).map(AppointmentResponse::of));
 	}
+
+
 }
