@@ -11,10 +11,11 @@ public class CreatePatientRequestBody {
 	public String fullName;
 
 	@NotBlank(message = "Phone is required")
+	@Pattern(regexp = "^[+]\\d{13}", message = "Phone number must be in the format +1234567890123")
 	public String phoneNumber;
 
 	@NotBlank(message = "CPF is required")
-	@Pattern(regexp = "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$", message = "CPF must be in the format XXX.XXX.XXX-XX")
+	@Pattern(regexp = "^\\d{11}", message = "CPF must be 11 digits")
 	public String cpf;
-	
+
 }

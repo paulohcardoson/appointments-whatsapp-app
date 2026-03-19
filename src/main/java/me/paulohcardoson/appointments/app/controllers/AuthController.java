@@ -36,6 +36,19 @@ public class AuthController {
 			.body(null);
 	}
 
+	@PostMapping("/logout")
+	public ResponseEntity<Void> logout() {
+		var clearedCookie = ResponseCookie.from("Authorization", "")
+			.httpOnly(true)
+			.path("/")
+			.maxAge(0)
+			.build();
+
+		return ResponseEntity.ok()
+			.header(HttpHeaders.SET_COOKIE, clearedCookie.toString())
+			.build();
+	}
+
 	@GetMapping("/me")
 	public ResponseEntity<Void> me() {
 		return ResponseEntity.ok().build();

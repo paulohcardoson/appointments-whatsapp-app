@@ -10,15 +10,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class AppointmentService {
 
 	private final AppointmentRepository appointmentRepository;
 	private final PatientRepository patientRepository;
+	private final WhatsAppService whatsAppService;
 
-	public AppointmentService(AppointmentRepository appointmentRepository, PatientRepository patientRepository) {
+	public AppointmentService(AppointmentRepository appointmentRepository, PatientRepository patientRepository, WhatsAppService whatsAppService) {
 		this.appointmentRepository = appointmentRepository;
 		this.patientRepository = patientRepository;
+		this.whatsAppService = whatsAppService;
 	}
 
 	public Appointment create(CreateAppointmentRequestBody data) {
@@ -35,10 +38,12 @@ public class AppointmentService {
 			.patient(patient)
 			.build();
 
-		return appointmentRepository.save(appointment);
+		var saved = appointmentRepository.save(appointment);
+		whatsAppService.sendAppointmentConfirmation(saved);
+		return saved;
 	}
 
 	public Page<Appointment> listAll(Pageable pageable) {
-		return appointmentRepository.findAll(pageable);
+		return appointmentRepository.findAllWithPatient(pageable);
 	}
 }

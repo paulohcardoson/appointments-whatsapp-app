@@ -30,6 +30,6 @@ public class PatientController {
 
 	@GetMapping
 	public ResponseEntity<Page<PatientResponse>> listAll(@PageableDefault(size = 10, sort = "fullName") Pageable pageable) {
-		return ResponseEntity.ok(patientService.listAll(pageable).map(PatientResponse::of));
+		return ResponseEntity.ok(patientService.listAll(pageable));
 	}
 }

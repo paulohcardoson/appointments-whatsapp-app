@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
 @Entity
 @Table(name = "patients", uniqueConstraints = {
 	@UniqueConstraint(name = "unique_cpf", columnNames = "cpf")
@@ -19,18 +21,18 @@ public class Patient {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	public Long id;
+	private Long id;
 
 	@NotNull
-	public String fullName;
+	private String fullName;
 
 	@NotNull
-	public String phoneNumber;
+	private String phoneNumber;
 
 	@NotNull
-	public String cpf;
+	private String cpf;
 
 	@OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-	public List<Appointment> appointments;
+	private List<Appointment> appointments;
 
 }
