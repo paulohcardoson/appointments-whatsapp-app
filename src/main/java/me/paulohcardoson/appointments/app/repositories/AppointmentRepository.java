@@ -38,4 +38,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 		countQuery = "SELECT COUNT(a) FROM Appointment a"
 	)
 	Page<Appointment> findAllWithPatient(Pageable pageable);
+
+	@Query("SELECT a FROM Appointment a JOIN FETCH a.patient WHERE a.startTime >= :startOfDay AND a.startTime < :endOfDay")
+	List<Appointment> findAllByDay(@Param("startOfDay") Instant startOfDay, @Param("endOfDay") Instant endOfDay);
+
+	@Query("SELECT a FROM Appointment a JOIN FETCH a.patient WHERE a.status = 'NOT_CONFIRMED' AND a.startTime >= :startOfDay AND a.startTime < :endOfDay")
+	List<Appointment> findNotConfirmedByDay(@Param("startOfDay") Instant startOfDay, @Param("endOfDay") Instant endOfDay);
 }

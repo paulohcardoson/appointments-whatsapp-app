@@ -36,5 +36,9 @@ public class AppointmentController {
 		return ResponseEntity.ok(appointmentService.listAll(pageable).map(AppointmentResponse::of));
 	}
 
+	@GetMapping("/confirm")
+	public ResponseEntity<AppointmentResponse> confirm(@RequestParam String token) {
+		return ResponseEntity.ok(AppointmentResponse.of(appointmentService.confirmByToken(token)));
+	}
 
 }

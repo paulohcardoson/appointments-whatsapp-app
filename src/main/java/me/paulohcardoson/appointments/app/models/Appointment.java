@@ -31,4 +31,8 @@ public class Appointment {
 	@JoinColumn(name = "patient_id", nullable = false)
 	private Patient patient;
 
+	public void confirm() {
+		this.status = AppointmentStatus.CONFIRMED;
+	}
+
 }

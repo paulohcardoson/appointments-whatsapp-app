@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -77,6 +78,19 @@ public class GlobalErrorHandler {
 			Instant.now()
 		);
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+	}
+
+	@ExceptionHandler(MissingServletRequestParameterException.class)
+	public ResponseEntity<ErrorResponse> handleMissingParam(MissingServletRequestParameterException ex) {
+		String message = "Missing required query parameter: " + ex.getParameterName();
+		ErrorResponse body = new ErrorResponse(
+			HttpStatus.BAD_REQUEST.value(),
+			HttpStatus.BAD_REQUEST.getReasonPhrase(),
+			message,
+			Instant.now()
+		);
+
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
 	}
 
 	public record ErrorResponse(int status, String error, String message, Instant timestamp) {
