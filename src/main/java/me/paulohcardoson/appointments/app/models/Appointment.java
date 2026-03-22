@@ -24,6 +24,7 @@ public class Appointment {
 	private Instant startTime;
 	private Instant endTime;
 
+	@Builder.Default
 	@Enumerated(EnumType.STRING)
 	private AppointmentStatus status = AppointmentStatus.NOT_CONFIRMED;
 
@@ -33,6 +34,11 @@ public class Appointment {
 
 	public void confirm() {
 		this.status = AppointmentStatus.CONFIRMED;
+	}
+
+	public void update(Instant startTime, Instant endTime) {
+		this.startTime = startTime;
+		this.endTime = endTime;
 	}
 
 }

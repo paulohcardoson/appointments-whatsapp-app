@@ -1,6 +1,7 @@
 package me.paulohcardoson.appointments.app.services;
 
 import me.paulohcardoson.appointments.app.dto.requests.CreatePatientRequestBody;
+import me.paulohcardoson.appointments.app.dto.requests.UpdatePatientRequestBody;
 import me.paulohcardoson.appointments.app.dto.responses.PatientResponse;
 import me.paulohcardoson.appointments.app.exceptions.AppError;
 import me.paulohcardoson.appointments.app.models.Appointment;
@@ -29,6 +30,25 @@ public class PatientService {
 		this.appointmentRepository = appointmentRepository;
 	}
 
+	public Patient update(Long id, UpdatePatientRequestBody body) {
+		var patient = patientRepository.findById(id)
+			.orElseThrow(() -> new AppError(HttpStatus.NOT_FOUND, "Patient with id " + id + " not found."));
+
+		patientRepository.findByCpf(body.cpf)
+			.filter(existing -> !existing.getId().equals(id))
+			.ifPresent(existing -> { throw new AppError(HttpStatus.BAD_REQUEST, "CPF " + body.cpf + " is already in use."); });
+
+		patient.update(body.fullName, body.phoneNumber, body.cpf);
+		return patientRepository.save(patient);
+	}
+
+	public void delete(Long id) {
+		if (!patientRepository.existsById(id)) {
+			throw new AppError(HttpStatus.NOT_FOUND, "Patient with id " + id + " not found.");
+		}
+		patientRepository.deleteById(id);
+	}
+
 	public Patient create(CreatePatientRequestBody body) {
 		var existingPatient = patientRepository.findByCpf(body.cpf);
 
@@ -45,8 +65,10 @@ public class PatientService {
 		return patientRepository.save(patient);
 	}
 
-	public Page<PatientResponse> listAll(Pageable pageable) {
-		var patientsPage = patientRepository.findAll(pageable);
+	public Page<PatientResponse> listAll(Pageable pageable, String filter) {
+		var patientsPage = (filter == null || filter.isBlank())
+			? patientRepository.findAll(pageable)
+			: patientRepository.findAllByFilter(filter, pageable);
 
 		if (patientsPage.isEmpty()) {
 			return Page.empty(pageable);

@@ -35,4 +35,10 @@ public class Patient {
 	@OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Appointment> appointments;
 
+	public void update(String fullName, String phoneNumber, String cpf) {
+		this.fullName = fullName;
+		this.phoneNumber = phoneNumber;
+		this.cpf = cpf;
+	}
+
 }

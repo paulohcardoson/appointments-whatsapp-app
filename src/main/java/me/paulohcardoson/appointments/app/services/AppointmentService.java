@@ -1,6 +1,7 @@
 package me.paulohcardoson.appointments.app.services;
 
 import me.paulohcardoson.appointments.app.dto.requests.CreateAppointmentRequestBody;
+import me.paulohcardoson.appointments.app.dto.requests.UpdateAppointmentRequestBody;
 import me.paulohcardoson.appointments.app.enums.AppointmentStatus;
 import me.paulohcardoson.appointments.app.exceptions.AppError;
 import me.paulohcardoson.appointments.app.models.Appointment;
@@ -11,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
 
 
 
@@ -72,7 +75,26 @@ public class AppointmentService {
 		return appointment;
 	}
 
-	public Page<Appointment> listAll(Pageable pageable) {
-		return appointmentRepository.findAllWithPatient(pageable);
+	public void delete(Long id) {
+		if (!appointmentRepository.existsById(id)) {
+			throw new AppError(HttpStatus.NOT_FOUND, "Appointment with id " + id + " not found.");
+		}
+		appointmentRepository.deleteById(id);
+	}
+
+	public Appointment update(Long id, UpdateAppointmentRequestBody data) {
+		if (data.startTime.isAfter(data.endTime)) {
+			throw new AppError(HttpStatus.BAD_REQUEST, "End time must be after start time.");
+		}
+
+		var appointment = appointmentRepository.findById(id)
+			.orElseThrow(() -> new AppError(HttpStatus.NOT_FOUND, "Appointment with id " + id + " not found."));
+
+		appointment.update(data.startTime, data.endTime);
+		return appointmentRepository.save(appointment);
+	}
+
+	public Page<Appointment> listAll(Pageable pageable, Instant from, Instant to) {
+		return appointmentRepository.findAllWithPatientByTimeRange(from, to, pageable);
 	}
 }
