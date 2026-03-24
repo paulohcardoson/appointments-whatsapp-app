@@ -6,6 +6,8 @@ import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import me.paulohcardoson.appointments.app.config.TwilioConfig;
 import me.paulohcardoson.appointments.app.models.Appointment;
+import me.paulohcardoson.appointments.app.models.Patient;
+import me.paulohcardoson.appointments.app.repositories.AppointmentRepository;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -29,13 +31,15 @@ public class WhatsAppService {
 
 	private final TwilioConfig twilioConfig;
 	private final RedisTemplate<String, Object> redisTemplate;
+	private final AppointmentRepository appointmentRepository;
 
-	public WhatsAppService(TwilioConfig twilioConfig, RedisTemplate<String, Object> redisTemplate) {
+	public WhatsAppService(TwilioConfig twilioConfig, RedisTemplate<String, Object> redisTemplate, AppointmentRepository appointmentRepository) {
 		this.twilioConfig = twilioConfig;
 		this.redisTemplate = redisTemplate;
+		this.appointmentRepository = appointmentRepository;
 	}
 
-	public void sendAppointmentReminder(Appointment appointment) {
+	public void sendAppointmentConfirmationMessage(Appointment appointment) {
 		String phoneNumber = appointment.getPatient().getPhoneNumber();
 		String to = "whatsapp:" + phoneNumber;
 
@@ -48,7 +52,6 @@ public class WhatsAppService {
 		variables.put("date", DATE_FORMATTER.format(appointment.getStartTime()));
 		variables.put("time", TIME_FORMATTER.format(appointment.getStartTime()));
 		variables.put("token", token);
-		//variables.put("app_url", APP_URL);
 
 		Message.creator(
 				new PhoneNumber(to),
@@ -58,6 +61,9 @@ public class WhatsAppService {
 			.setContentSid("HXf7b0ef806f621695fe6cb13e390df266")
 			.setContentVariables(variables.toString())
 			.create();
+
+		appointment.markAsWaitingForConfirmation();
+		appointmentRepository.save(appointment);
 	}
 
 	public void sendAppointmentConfirmation(Appointment appointment) {
@@ -76,6 +82,23 @@ public class WhatsAppService {
 				(String) null
 			)
 			.setContentSid("HXbfefed9a3ce86a6a9c485a53bcb11c1d")
+			.setContentVariables(variables.toString())
+			.create();
+	}
+
+	public void sendManualMessage(Patient patient) {
+		String to = "whatsapp:" + patient.getPhoneNumber();
+
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode variables = mapper.createObjectNode();
+		variables.put("name", patient.getFullName());
+
+		Message.creator(
+				new PhoneNumber(to),
+				new PhoneNumber(twilioConfig.whatsappFrom),
+				(String) null
+			)
+			.setContentSid("HXc72c51dd4a339c6c0c1860cd0107c49c")
 			.setContentVariables(variables.toString())
 			.create();
 	}

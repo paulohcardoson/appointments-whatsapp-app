@@ -33,7 +33,7 @@ public class DailyAppointmentReminderJob implements Job {
 
 		List<Appointment> appointments = appointmentRepository.findNotConfirmedByDay(startOfDay, endOfDay);
 		for (Appointment appointment : appointments) {
-			whatsAppService.sendAppointmentReminder(appointment);
+			whatsAppService.sendAppointmentConfirmationMessage(appointment);
 		}
 	}
 }

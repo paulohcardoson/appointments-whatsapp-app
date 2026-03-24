@@ -22,6 +22,7 @@ public class WebConfig implements WebMvcConfigurer {
 			.addPathPatterns("/patients/create")
 			.addPathPatterns("/appointments/")
 			.addPathPatterns("/appointments/create")
-			.addPathPatterns("/me");
+			.addPathPatterns("/me")
+			.excludePathPatterns("/appointments/confirm");
 	}
 }

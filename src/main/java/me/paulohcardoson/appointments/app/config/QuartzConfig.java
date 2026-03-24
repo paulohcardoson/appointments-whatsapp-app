@@ -21,8 +21,8 @@ public class QuartzConfig {
 	@Bean
 	public Trigger dailyAppointmentReminderTrigger(JobDetail dailyAppointmentReminderJobDetail) {
 		CronScheduleBuilder schedule = CronScheduleBuilder
-			.cronSchedule("0 0 5 * * ?")
-			//.cronSchedule("0 * * * * ?")
+			//.cronSchedule("0 0 5 * * ?")
+			.cronSchedule("0 * * * * ?")
 			.inTimeZone(TimeZone.getTimeZone("America/Manaus"));
 
 		return TriggerBuilder.newTrigger()

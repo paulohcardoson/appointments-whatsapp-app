@@ -49,7 +49,9 @@ public class AppointmentService {
 			.build();
 
 		var saved = appointmentRepository.save(appointment);
-		whatsAppService.sendAppointmentConfirmation(saved);
+		if (!data.startTime.isBefore(Instant.now())) {
+			whatsAppService.sendAppointmentConfirmation(saved);
+		}
 		return saved;
 	}
 

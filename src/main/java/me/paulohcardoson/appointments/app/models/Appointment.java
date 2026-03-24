@@ -36,6 +36,10 @@ public class Appointment {
 		this.status = AppointmentStatus.CONFIRMED;
 	}
 
+	public void markAsWaitingForConfirmation() {
+		this.status = AppointmentStatus.WAITING_FOR_CONFIRMATION;
+	}
+
 	public void update(Instant startTime, Instant endTime) {
 		this.startTime = startTime;
 		this.endTime = endTime;
